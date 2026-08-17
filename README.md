@@ -28,6 +28,12 @@ base de données, prête à déployer sur **GitHub Pages**.
   suivante, à droite = précédente), design de carte à jouer premium (liseré doré,
   numéro de carte).
 - **Mode solo & mode groupe** (passage de l'appareil / lecture à voix haute).
+- **♥ J'aime / 👎 Je passe** sur chaque carte :
+  - le **♥** enregistre la question dans **« Mes Favoris »** pour la retrouver
+    plus tard (écran dédié, accessible depuis la Scène) ;
+  - le **👎** masque la carte : elle ne réapparaîtra plus dans le paquet.
+  - Les deux sont **persistés** dans le navigateur (`localStorage`), et l'on peut
+    **restaurer les cartes masquées** depuis l'écran Favoris.
 - **Mélange (shuffle)** du paquet, **compteur de progression**, boutons
   précédente / suivante, retour à la scène.
 - **Sons discrets optionnels** (ouverture de rideau, glissement de carte),

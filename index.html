@@ -60,8 +60,12 @@
     <!-- Rail de paquets scrollable horizontalement -->
     <div id="deck-rail" class="deck-rail" role="list" aria-label="Jeux de cartes thématiques"></div>
 
-    <!-- Réglages : son + mode -->
+    <!-- Réglages : favoris + son + mode -->
     <div class="stage-controls">
+      <button id="fav-open" class="chip chip--fav" type="button" title="Voir mes questions favorites">
+        <span class="chip__icon">♥</span><span class="chip__label">Favoris</span>
+        <span id="fav-count" class="chip__count" hidden>0</span>
+      </button>
       <button id="sound-toggle" class="chip" type="button" aria-pressed="false" title="Activer les sons">
         <span class="chip__icon">🔈</span><span class="chip__label">Sons</span>
       </button>
@@ -69,6 +73,28 @@
         <button class="chip chip--mode is-active" data-mode="solo" type="button">Solo</button>
         <button class="chip chip--mode" data-mode="groupe" type="button">Groupe</button>
       </div>
+    </div>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- ÉCRAN 4 — MES FAVORIS (questions likées)                      -->
+  <!-- ============================================================= -->
+  <section id="favorites" class="screen favorites" aria-label="Mes favoris" hidden>
+    <header class="game-header">
+      <button id="fav-back" class="icon-btn" type="button" aria-label="Retour à la scène">‹ Scène</button>
+      <div class="game-title-wrap">
+        <h2 class="game-title">Mes Favoris</h2>
+        <p id="fav-subtitle" class="game-progress" aria-live="polite">0 question enregistrée</p>
+      </div>
+      <span class="icon-btn" style="visibility:hidden" aria-hidden="true">‹ Scène</span>
+    </header>
+
+    <div id="fav-list" class="fav-list" role="list"></div>
+
+    <div class="fav-footer">
+      <button id="restore-dislikes" class="btn btn--ghost" type="button" hidden>
+        Restaurer les cartes masquées (<span id="dislike-count">0</span>)
+      </button>
     </div>
   </section>
 
