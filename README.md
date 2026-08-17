@@ -34,6 +34,15 @@ base de données, prête à déployer sur **GitHub Pages**.
   - le **👎** masque la carte : elle ne réapparaîtra plus dans le paquet.
   - Les deux sont **persistés** dans le navigateur (`localStorage`), et l'on peut
     **restaurer les cartes masquées** depuis l'écran Favoris.
+- **Filtre de profondeur** : chaque question est marquée `soft` (**légère**) ou
+  `deep` (**délicate**). Sur la Scène, un filtre **Toutes / Légères / Délicates**
+  ajuste les paquets et les compteurs.
+- **Cartes délicates mises en valeur** : halo rouge pulsé, reflet « précieux »
+  qui balaie la carte, badge ◆ Délicate, et un **son grave et dramatique**
+  distinct (au lieu du simple glissement).
+- **Dilemmes moraux immersifs** : ce thème utilise une **mise en page « scénario »**
+  (récit posé à la 1ʳᵉ lettre ornée, situation détaillée, puis deux choix A / B
+  sélectionnables) pour plonger le joueur dans la situation.
 - **Mélange (shuffle)** du paquet, **compteur de progression**, boutons
   précédente / suivante, retour à la scène.
 - **Sons discrets optionnels** (ouverture de rideau, glissement de carte),
@@ -98,27 +107,50 @@ Aucune étape de build : les fichiers sont servis tels quels.
 
 ## ✏️ Ajouter ou modifier des questions
 
-Tout se passe dans **`questions.json`**. Chaque thème est un objet du tableau
-`themes` :
+Tout se passe dans **`questions.json`**. Chaque question porte une profondeur
+`depth` : `"soft"` (légère) ou `"deep"` (délicate, mise en valeur et jouée avec
+un son dramatique).
+
+**Thème classique** (`"layout": "question"`) :
 
 ```json
 {
   "id": "amis",
   "title": "Entre Amis",
   "subtitle": "Pour rire, se chamailler et se découvrir",
-  "icon": "🎭",
-  "accent": "#C9A24B",
+  "layout": "question",
   "cards": [
-    "Votre première question…",
-    "Votre deuxième question…"
+    { "text": "Votre première question…", "depth": "soft" },
+    { "text": "Une question plus intime…", "depth": "deep" }
   ]
 }
 ```
 
-- **Ajouter une question** : ajoutez une chaîne au tableau `cards`.
+**Thème « scénario »** (`"layout": "scenario"`, utilisé par les Dilemmes) :
+
+```json
+{
+  "id": "dilemmes",
+  "title": "Dilemmes Moraux",
+  "subtitle": "Entrez dans la scène.",
+  "layout": "scenario",
+  "cards": [
+    {
+      "depth": "deep",
+      "setup": "Le récit immersif qui plante la situation…",
+      "question": "La question qui tranche ?",
+      "optionA": "Premier choix",
+      "optionB": "Second choix"
+    }
+  ]
+}
+```
+
+- **Ajouter une question** : ajoutez un objet au tableau `cards` (avec `depth`).
 - **Ajouter un thème** : copiez un bloc de thème, changez `id` (unique), `title`,
-  `subtitle`, `icon` (emoji) et remplissez `cards`. Il apparaît automatiquement
-  comme un nouveau paquet sur la scène.
+  `subtitle`, choisissez le `layout`, et remplissez `cards`. Il apparaît
+  automatiquement comme un nouveau paquet sur la Scène.
+- Les libellés des profondeurs se règlent dans `depthLabels` en haut du fichier.
 
 Aucun code à toucher : l'interface se reconstruit à partir du JSON.
 

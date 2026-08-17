@@ -412,7 +412,48 @@ button { font-family: inherit; cursor: pointer; }
   border-radius: 12px;
   pointer-events: none;
 }
-.deck__icon { font-size: 2.6rem; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)); }
+/* Ornement doré dessiné (remplace l'emoji sur la Scène) */
+.deck__ornament, .play-card__ornament {
+  position: relative;
+  width: 60px;
+  height: 14px;
+}
+.deck__ornament::before, .play-card__ornament::before {
+  content: "";
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 10px; height: 10px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  background: linear-gradient(135deg, var(--gold-soft), var(--gold));
+  box-shadow: 0 0 12px var(--gold-glow);
+}
+.deck__ornament::after, .play-card__ornament::after {
+  content: "";
+  position: absolute;
+  top: 50%; left: 0; right: 0; height: 1px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, transparent, var(--gold) 22%, transparent 42%,
+              transparent 58%, var(--gold) 78%, transparent);
+  opacity: 0.7;
+}
+
+/* Reflet qui balaie doucement chaque paquet */
+.deck__sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 32%, rgba(255,230,180,0.10) 48%,
+              rgba(255,235,190,0.20) 50%, transparent 68%);
+  transform: translateX(-120%);
+  animation: deck-sheen 6s ease-in-out infinite;
+}
+@keyframes deck-sheen {
+  0% { transform: translateX(-120%); }
+  55%, 100% { transform: translateX(120%); }
+}
+.deck:hover .deck__sheen { animation-duration: 2.4s; }
+.deck--empty { opacity: 0.5; filter: grayscale(0.25); }
+
 .deck__title {
   font-family: "Marcellus", serif;
   font-size: 1.5rem;
@@ -426,14 +467,30 @@ button { font-family: inherit; cursor: pointer; }
   margin: 0;
   font-style: italic;
 }
-.deck__count {
+.deck__meta {
   position: absolute;
   bottom: 16px;
   font-family: "Marcellus", serif;
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--gold-soft);
+}
+
+/* Filtre de profondeur */
+.stage-filter {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.chip--depth { font-size: 0.74rem; }
+.chip--delicate.is-active {
+  color: var(--ink);
+  background: linear-gradient(180deg, #8a1b1b, #4a0e0e);
+  border-color: var(--gold);
+  box-shadow: 0 0 16px rgba(122, 20, 20, 0.6);
 }
 
 /* Réglages scène */
@@ -690,6 +747,163 @@ button { font-family: inherit; cursor: pointer; }
 .chip--fav .chip__icon { color: #f2b8b8; }
 .chip--fav.is-active .chip__icon { color: inherit; }
 
+/* =============================================================
+   CARTE DÉLICATE (deep) — objet précieux aux reflets rouges
+   ============================================================= */
+.play-card--deep {
+  border-color: var(--gold);
+  background:
+    radial-gradient(130% 100% at 50% 0%, rgba(150, 20, 20, 0.7), transparent 60%),
+    repeating-linear-gradient(122deg, rgba(255, 70, 70, 0.05) 0 8px, transparent 8px 16px),
+    linear-gradient(160deg, #3a0b0b, #1a0404);
+  animation: deep-glow 3.2s ease-in-out infinite;
+}
+@keyframes deep-glow {
+  0%, 100% { box-shadow: var(--shadow-deep), inset 0 0 70px rgba(120, 10, 10, 0.5), 0 0 22px rgba(122, 20, 20, 0.4); }
+  50%      { box-shadow: var(--shadow-deep), inset 0 0 92px rgba(160, 24, 24, 0.6), 0 0 42px rgba(170, 34, 34, 0.6); }
+}
+.play-card--deep::before { border-color: rgba(201, 162, 75, 0.5); }
+.play-card--deep .play-card__ornament { display: none; }
+
+/* Reflet précieux qui balaie la carte */
+.card-sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+}
+.card-sheen::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: -60%;
+  width: 55%;
+  height: 180%;
+  transform: rotate(9deg);
+  filter: blur(3px);
+  background: linear-gradient(105deg, transparent,
+    rgba(255, 170, 170, 0.12) 40%,
+    rgba(255, 110, 110, 0.38) 50%,
+    rgba(255, 210, 150, 0.28) 60%, transparent);
+  animation: sheen-sweep 3.6s ease-in-out infinite;
+}
+@keyframes sheen-sweep {
+  0% { left: -60%; }
+  60%, 100% { left: 130%; }
+}
+
+/* Le contenu passe au-dessus du reflet (le reflet reste en fond) */
+.play-card__text, .play-card__theme, .play-card__ornament, .play-card__delicate,
+.scenario__label, .scenario__setup, .scenario__question, .scenario__choices {
+  position: relative;
+  z-index: 2;
+}
+.play-card__corner { z-index: 2; }
+
+/* Badge « Délicate » */
+.play-card__delicate {
+  align-self: center;
+  margin-bottom: 8px;
+  padding: 3px 14px;
+  font-family: "Marcellus", serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #ffdede;
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(150, 20, 20, 0.5), rgba(60, 10, 10, 0.5));
+  box-shadow: 0 0 14px rgba(160, 30, 30, 0.5);
+}
+
+/* =============================================================
+   MISE EN PAGE « SCÉNARIO » — Dilemmes moraux
+   ============================================================= */
+.play-card--scenario {
+  justify-content: flex-start;
+  text-align: left;
+  padding: 40px 24px 78px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.play-card--scenario::-webkit-scrollbar { display: none; }
+.scenario__label {
+  align-self: center;
+  font-family: "Marcellus", serif;
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold-soft);
+}
+.scenario__setup {
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(1.15rem, 4.6vw, 1.5rem);
+  line-height: 1.5;
+  font-style: italic;
+  color: var(--ink);
+  margin: 16px 0 14px;
+}
+.scenario__setup::first-letter {
+  float: left;
+  font-family: "Pinyon Script", cursive;
+  font-style: normal;
+  font-size: 3em;
+  line-height: 0.72;
+  padding: 6px 10px 0 0;
+  color: var(--gold-soft);
+  text-shadow: 0 0 12px var(--gold-glow);
+}
+.scenario__question {
+  text-align: center;
+  font-family: "Marcellus", serif;
+  font-size: clamp(1.1rem, 4.6vw, 1.4rem);
+  color: #ffe9c9;
+  margin: 8px 0 16px;
+}
+.scenario__choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: auto;
+}
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--gold-faint);
+  background: rgba(20, 3, 3, 0.5);
+  color: var(--ink);
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.15rem;
+  transition: transform 0.2s var(--ease-soft), border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+.choice:hover, .choice:focus-visible { border-color: var(--gold); transform: translateY(-1px); }
+.choice__key {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  color: var(--gold-soft);
+  font-family: "Marcellus", serif;
+  font-size: 0.8rem;
+}
+.choice.is-chosen {
+  background: linear-gradient(180deg, rgba(150, 20, 20, 0.55), rgba(60, 10, 10, 0.55));
+  border-color: var(--gold);
+  box-shadow: 0 0 16px rgba(160, 30, 30, 0.45);
+}
+.choice.is-chosen .choice__key { background: var(--gold); color: #2a1405; }
+
 .game-footer {
   display: flex;
   gap: 14px;
@@ -737,20 +951,44 @@ button { font-family: inherit; cursor: pointer; }
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.fav-item__icon { font-size: 1.5rem; line-height: 1.2; }
+.fav-item__pip {
+  flex: 0 0 auto;
+  width: 10px; height: 10px;
+  margin-top: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 8px var(--gold-glow);
+}
+.fav-item--deep .fav-item__pip { background: #d43b3b; box-shadow: 0 0 8px rgba(212, 60, 60, 0.7); }
 .fav-item__body { flex: 1; min-width: 0; }
 .fav-item__text {
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   font-size: 1.2rem;
   line-height: 1.32;
   color: var(--ink);
 }
+.fav-item__meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .fav-item__theme {
   font-family: "Marcellus", serif;
   font-size: 0.62rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--gold-soft);
+}
+.fav-item__badge {
+  font-family: "Marcellus", serif;
+  font-size: 0.56rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--gold-faint);
+  color: var(--gold-soft);
+}
+.fav-item--deep .fav-item__badge {
+  color: #ffdede;
+  border-color: var(--gold);
+  background: rgba(150, 20, 20, 0.35);
 }
 .fav-item__remove {
   flex: 0 0 auto;

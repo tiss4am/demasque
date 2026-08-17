@@ -78,6 +78,41 @@
     src.stop(now + 0.4);
   }
 
+  /** Carte DÉLICATE : accord grave, résonant et dramatique, avec un
+   *  scintillement cristallin — pour signaler une question « précieuse ». */
+  function deep() {
+    if (!enabled || !ensureCtx()) return;
+    const now = ctx.currentTime;
+
+    // fondamentale grave, suspense
+    const bass = ctx.createOscillator();
+    bass.type = "sine";
+    bass.frequency.setValueAtTime(98, now);            // sol grave
+    bass.frequency.exponentialRampToValueAtTime(110, now + 0.9);
+    const bassGain = envGain(now, 0.16, 0.08, 1.3);
+    bass.connect(bassGain).connect(ctx.destination);
+    bass.start(now); bass.stop(now + 1.5);
+
+    // quinte chaude, une octave au-dessus
+    const mid = ctx.createOscillator();
+    mid.type = "triangle";
+    mid.frequency.setValueAtTime(294, now);            // ré
+    const midGain = envGain(now, 0.07, 0.12, 1.1);
+    mid.connect(midGain).connect(ctx.destination);
+    mid.start(now); mid.stop(now + 1.3);
+
+    // scintillement cristallin (l'éclat « précieux »)
+    const shimmer = ctx.createOscillator();
+    shimmer.type = "sine";
+    shimmer.frequency.setValueAtTime(1568, now + 0.12); // sol aigu
+    const shimGain = ctx.createGain();
+    shimGain.gain.setValueAtTime(0.0001, now + 0.12);
+    shimGain.gain.exponentialRampToValueAtTime(0.05, now + 0.22);
+    shimGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.9);
+    shimmer.connect(shimGain).connect(ctx.destination);
+    shimmer.start(now + 0.12); shimmer.stop(now + 1.0);
+  }
+
   const Sound = {
     toggle: function () {
       enabled = !enabled;
@@ -86,7 +121,8 @@
     },
     isEnabled: function () { return enabled; },
     curtain: curtain,
-    slide: slide
+    slide: slide,
+    deep: deep
   };
 
   global.Sound = Sound;

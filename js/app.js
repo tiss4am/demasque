@@ -1,7 +1,8 @@
 /* =============================================================
    DÉMASQUE — Logique de l'application
    Navigation : Accueil (rideau) → Scène (thèmes) → Mode jeu (cartes).
-   + Favoris (♥) et cartes masquées (👎), persistés via localStorage.
+   + Favoris (♥), cartes masquées (👎), filtre de profondeur (légère /
+     délicate), et mise en page « scénario » pour les dilemmes moraux.
    Vanilla JS, aucune dépendance. Données chargées depuis questions.json.
    ============================================================= */
 (function () {
@@ -16,6 +17,7 @@
   const deckRail = document.getElementById("deck-rail");
   const soundToggle = document.getElementById("sound-toggle");
   const modeButtons = document.querySelectorAll(".chip--mode");
+  const depthButtons = document.querySelectorAll(".chip--depth");
 
   const gameTitle = document.getElementById("game-title");
   const gameProgress = document.getElementById("game-progress");
@@ -30,7 +32,6 @@
   const favBackBtn = document.getElementById("fav-back");
   const favList = document.getElementById("fav-list");
   const favSubtitle = document.getElementById("fav-subtitle");
-  const favFooter = document.querySelector(".fav-footer");
   const restoreBtn = document.getElementById("restore-dislikes");
   const dislikeCountEl = document.getElementById("dislike-count");
 
@@ -40,12 +41,13 @@
     theme: null,       // thème sélectionné
     cards: [],         // cartes du thème courant (filtrées / mélangées)
     index: 0,          // carte affichée
-    mode: "solo"       // "solo" | "groupe"
+    mode: "solo",      // "solo" | "groupe"
+    filter: "all"      // "all" | "soft" | "deep"  (profondeur)
   };
 
   /* =============================================================
      STOCKAGE — favoris & cartes masquées (localStorage)
-     Les cartes sont identifiées par leur texte (stable au mélange).
+     Les cartes sont identifiées par leur clé texte (stable au mélange).
      ============================================================= */
   const LIKES_KEY = "demasque:likes";
   const DISLIKES_KEY = "demasque:dislikes";
@@ -59,37 +61,38 @@
     catch (e) { /* stockage indisponible : on continue sans persistance */ }
   }
 
-  let likes = readJSON(LIKES_KEY, []);       // [{ text, themeId, theme, icon }]
-  let dislikes = readJSON(DISLIKES_KEY, []); // [ text ]
+  let likes = readJSON(LIKES_KEY, []);       // [{ text, theme, depth }]
+  let dislikes = readJSON(DISLIKES_KEY, []); // [ key ]
 
-  const isLiked = (text) => likes.some((l) => l.text === text);
-  const isDisliked = (text) => dislikes.indexOf(text) !== -1;
+  const isLiked = (key) => likes.some((l) => l.text === key);
+  const isDisliked = (key) => dislikes.indexOf(key) !== -1;
 
-  function toggleLike(text) {
-    if (isLiked(text)) {
-      likes = likes.filter((l) => l.text !== text);
+  /* ---------- Helpers de carte (gèrent les deux formats) ---------- */
+  const cardKey = (c) => c.text || c.setup;        // identifiant stable
+  const cardDepth = (c) => c.depth || "soft";
+  const depthLabel = (d) => (state.data.depthLabels && state.data.depthLabels[d]) || d;
+
+  function toggleLike(card) {
+    const key = cardKey(card);
+    if (isLiked(key)) {
+      likes = likes.filter((l) => l.text !== key);
     } else {
-      likes.push({
-        text: text,
-        themeId: state.theme.id,
-        theme: state.theme.title,
-        icon: state.theme.icon
-      });
+      likes.push({ text: key, theme: state.theme.title, depth: cardDepth(card) });
     }
     writeJSON(LIKES_KEY, likes);
     updateFavCount();
-    return isLiked(text);
+    return isLiked(key);
   }
-
-  function addDislike(text) {
-    if (!isDisliked(text)) dislikes.push(text);
-    likes = likes.filter((l) => l.text !== text); // une carte masquée quitte les favoris
+  function addDislike(card) {
+    const key = cardKey(card);
+    if (!isDisliked(key)) dislikes.push(key);
+    likes = likes.filter((l) => l.text !== key); // une carte masquée quitte les favoris
     writeJSON(DISLIKES_KEY, dislikes);
     writeJSON(LIKES_KEY, likes);
     updateFavCount();
   }
-  function removeLike(text) {
-    likes = likes.filter((l) => l.text !== text);
+  function removeLike(key) {
+    likes = likes.filter((l) => l.text !== key);
     writeJSON(LIKES_KEY, likes);
     updateFavCount();
   }
@@ -97,16 +100,23 @@
     dislikes = [];
     writeJSON(DISLIKES_KEY, dislikes);
   }
-
   function updateFavCount() {
     const n = likes.length;
     favCountBadge.textContent = String(n);
     favCountBadge.hidden = n === 0;
   }
 
-  /* ---------- Utilitaires ---------- */
+  /* ---------- Sélection des cartes d'un thème (filtre + masquées) ---------- */
+  function themeCards(theme) {
+    return theme.cards.filter((c) => {
+      if (isDisliked(cardKey(c))) return false;
+      if (state.filter === "soft") return cardDepth(c) === "soft";
+      if (state.filter === "deep") return cardDepth(c) === "deep";
+      return true;
+    });
+  }
 
-  /** Mélange de Fisher-Yates (copie non destructive). */
+  /* ---------- Utilitaires ---------- */
   function shuffle(arr) {
     const a = arr.slice();
     for (let i = a.length - 1; i > 0; i--) {
@@ -123,7 +133,6 @@
       .replace(/"/g, "&quot;");
   }
 
-  /** Bascule d'écran avec gestion de l'attribut hidden + classe active. */
   function showScreen(el) {
     [splash, scene, game, favorites].forEach((s) => {
       if (s === el) {
@@ -136,7 +145,7 @@
     });
   }
 
-  /** Petite notification éphémère (feedback like / masquage). */
+  /** Petite notification éphémère. */
   let toastTimer = null;
   function toast(message) {
     let el = document.getElementById("toast");
@@ -148,7 +157,6 @@
       document.body.appendChild(el);
     }
     el.textContent = message;
-    // reflow pour rejouer la transition
     void el.offsetWidth;
     el.classList.add("is-show");
     clearTimeout(toastTimer);
@@ -176,22 +184,31 @@
       });
   }
 
-  /* ---------- Écran 2 : construire les paquets ---------- */
+  /* ---------- Écran 2 : construire les paquets (sans emoji) ---------- */
   function buildDecks() {
     deckRail.innerHTML = "";
     state.data.themes.forEach((theme) => {
-      const available = theme.cards.filter((c) => !isDisliked(c)).length;
+      const available = themeCards(theme).length;
+      const deepTotal = theme.cards.filter(
+        (c) => cardDepth(c) === "deep" && !isDisliked(cardKey(c))
+      ).length;
+
       const deck = document.createElement("button");
-      deck.className = "deck";
+      deck.className = "deck" + (available === 0 ? " deck--empty" : "");
       deck.type = "button";
       deck.setAttribute("role", "listitem");
       deck.setAttribute("aria-label", theme.title + " — " + available + " cartes");
+
+      let meta = available + (available > 1 ? " cartes" : " carte");
+      if (state.filter === "all" && deepTotal > 0) meta += " · " + deepTotal + " délicates";
+
       deck.innerHTML =
         '<span class="deck__face">' +
-        '<span class="deck__icon" aria-hidden="true">' + theme.icon + "</span>" +
-        '<h3 class="deck__title">' + esc(theme.title) + "</h3>" +
-        '<p class="deck__subtitle">' + esc(theme.subtitle) + "</p>" +
-        '<span class="deck__count">' + available + " cartes</span>" +
+        '  <span class="deck__sheen" aria-hidden="true"></span>' +
+        '  <span class="deck__ornament" aria-hidden="true"></span>' +
+        '  <h3 class="deck__title">' + esc(theme.title) + "</h3>" +
+        '  <p class="deck__subtitle">' + esc(theme.subtitle) + "</p>" +
+        '  <span class="deck__meta">' + meta + "</span>" +
         "</span>";
       deck.addEventListener("click", () => openTheme(theme));
       deckRail.appendChild(deck);
@@ -201,9 +218,10 @@
   /* ---------- Écran 3 : ouvrir un thème ---------- */
   function openTheme(theme) {
     state.theme = theme;
-    state.cards = theme.cards.filter((c) => !isDisliked(c));
+    state.cards = themeCards(theme);
     state.index = 0;
     gameTitle.textContent = theme.title;
+    game.classList.toggle("game--scenario", theme.layout === "scenario");
     showScreen(game);
     if (state.cards.length === 0) {
       renderEmptyDeck();
@@ -212,25 +230,24 @@
     }
   }
 
-  /** Affiche un état vide si toutes les cartes du thème sont masquées. */
   function renderEmptyDeck() {
     cardStack.innerHTML =
       '<article class="play-card play-card--empty">' +
-      '<span class="play-card__mark" aria-hidden="true">🎭</span>' +
-      '<p class="play-card__text">Toutes les cartes de ce thème sont masquées.</p>' +
-      '<p class="play-card__theme">Restaurez-les depuis « Mes Favoris »</p>' +
+      '<span class="play-card__ornament" aria-hidden="true"></span>' +
+      '<p class="play-card__text">Aucune carte à afficher avec ce filtre.</p>' +
+      '<p class="play-card__theme">Changez de filtre ou restaurez les cartes masquées</p>' +
       "</article>";
     gameProgress.textContent = "0 carte";
     prevBtn.disabled = true;
     nextBtn.disabled = true;
   }
 
-  /** Construit la carte courante (+ deux cartes de profondeur pour l'effet pile). */
+  /* ---------- Rendu d'une carte ---------- */
   function renderCard(animClass) {
     cardStack.innerHTML = "";
     nextBtn.disabled = false;
 
-    // cartes de fond (décoratives) pour donner l'épaisseur du paquet
+    // cartes de fond (épaisseur du paquet)
     for (let d = 2; d >= 1; d--) {
       if (state.index + d < state.cards.length) {
         const ghost = document.createElement("div");
@@ -241,16 +258,46 @@
     }
 
     const total = state.cards.length;
-    const text = state.cards[state.index];
-    const liked = isLiked(text);
-    const card = document.createElement("article");
-    card.className = "play-card " + (animClass || "");
+    const c = state.cards[state.index];
+    const key = cardKey(c);
+    const deep = cardDepth(c) === "deep";
+    const scenario = state.theme.layout === "scenario";
+    const liked = isLiked(key);
     const num = String(state.index + 1).padStart(2, "0");
+
+    const card = document.createElement("article");
+    card.className =
+      "play-card " + (animClass || "") +
+      (deep ? " play-card--deep" : "") +
+      (scenario ? " play-card--scenario" : "");
+
+    const delicateBadge = deep
+      ? '<span class="play-card__delicate">◆ Délicate</span>' : "";
+    const sheen = deep ? '<span class="card-sheen" aria-hidden="true"></span>' : "";
+
+    let body;
+    if (scenario) {
+      body =
+        '<span class="scenario__label">Scène ' + num + "</span>" +
+        delicateBadge +
+        '<p class="scenario__setup">' + esc(c.setup) + "</p>" +
+        '<p class="scenario__question">' + esc(c.question) + "</p>" +
+        '<div class="scenario__choices">' +
+        '  <button class="choice" type="button"><span class="choice__key">A</span>' + esc(c.optionA) + "</button>" +
+        '  <button class="choice" type="button"><span class="choice__key">B</span>' + esc(c.optionB) + "</button>" +
+        "</div>";
+    } else {
+      body =
+        '<span class="play-card__ornament" aria-hidden="true"></span>' +
+        delicateBadge +
+        '<p class="play-card__text">' + esc(key) + "</p>" +
+        '<span class="play-card__theme">' + esc(state.theme.title) + "</span>";
+    }
+
     card.innerHTML =
+      sheen +
       '<span class="play-card__corner play-card__corner--tl">' + num + "</span>" +
-      '<span class="play-card__mark" aria-hidden="true">' + state.theme.icon + "</span>" +
-      '<p class="play-card__text">' + esc(text) + "</p>" +
-      '<span class="play-card__theme">' + esc(state.theme.title) + "</span>" +
+      body +
       '<span class="play-card__corner play-card__corner--br">' + num + "</span>" +
       '<div class="card-actions">' +
       '  <button class="card-act card-act--dislike" type="button" title="Ne plus voir cette carte" aria-label="Masquer cette carte">👎</button>' +
@@ -259,20 +306,32 @@
       "</div>";
     cardStack.appendChild(card);
 
-    // Actions like / dislike — on stoppe la propagation pour ne pas déclencher le swipe
+    // Interactions internes : ne pas déclencher le swipe
+    const stop = (el) => ["pointerdown", "pointerup", "pointermove"].forEach(
+      (ev) => el.addEventListener(ev, (e) => e.stopPropagation())
+    );
     const likeBtn = card.querySelector(".card-act--like");
     const dislikeBtn = card.querySelector(".card-act--dislike");
-    ["pointerdown", "pointerup", "pointermove"].forEach((ev) => {
-      likeBtn.addEventListener(ev, (e) => e.stopPropagation());
-      dislikeBtn.addEventListener(ev, (e) => e.stopPropagation());
-    });
+    stop(likeBtn); stop(dislikeBtn);
     likeBtn.addEventListener("click", () => {
-      const nowLiked = toggleLike(text);
+      const nowLiked = toggleLike(c);
       likeBtn.classList.toggle("is-active", nowLiked);
       likeBtn.setAttribute("aria-pressed", String(nowLiked));
       toast(nowLiked ? "♥ Enregistrée dans vos favoris" : "Retirée des favoris");
     });
     dislikeBtn.addEventListener("click", () => dislikeCurrent(card));
+
+    // choix A/B (immersion — sélection visuelle uniquement)
+    card.querySelectorAll(".choice").forEach((btn) => {
+      stop(btn);
+      btn.addEventListener("click", () => {
+        card.querySelectorAll(".choice").forEach((b) => b.classList.remove("is-chosen"));
+        btn.classList.add("is-chosen");
+      });
+    });
+
+    // son : accord grave « précieux » pour les délicates, glissement sinon
+    if (window.Sound) { deep ? Sound.deep() : Sound.slide(); }
 
     gameProgress.textContent = "Carte " + (state.index + 1) + " / " + total;
     prevBtn.disabled = state.index === 0;
@@ -285,16 +344,14 @@
   function nextCard() {
     if (state.index < state.cards.length - 1) {
       state.index++;
-      window.Sound && Sound.slide();
       renderCard("enter-next");
     } else {
-      goToScene(); // fin du paquet → retour à la scène
+      goToScene();
     }
   }
   function prevCard() {
     if (state.index > 0) {
       state.index--;
-      window.Sound && Sound.slide();
       renderCard("enter-prev");
     }
   }
@@ -302,24 +359,17 @@
     if (state.cards.length === 0) return;
     state.cards = shuffle(state.cards);
     state.index = 0;
-    window.Sound && Sound.slide();
     renderCard("enter-next");
   }
 
   /** 👎 Masque la carte courante : elle ne réapparaîtra plus. */
   function dislikeCurrent(card) {
-    const text = state.cards[state.index];
-    addDislike(text);
+    addDislike(state.cards[state.index]);
     state.cards.splice(state.index, 1);
     toast("Carte masquée — vous ne la reverrez plus");
-    window.Sound && Sound.slide();
 
-    if (state.cards.length === 0) {
-      renderEmptyDeck();
-      return;
-    }
+    if (state.cards.length === 0) { renderEmptyDeck(); return; }
     if (state.index >= state.cards.length) state.index = state.cards.length - 1;
-    // petite animation de sortie puis rendu de la suivante
     card.style.transition = "transform 0.3s ease, opacity 0.3s ease";
     card.style.transform = "translateY(40px) scale(0.9)";
     card.style.opacity = "0";
@@ -327,7 +377,7 @@
   }
 
   function goToScene() {
-    buildDecks(); // rafraîchit les compteurs (cartes masquées/restaurées)
+    buildDecks();
     showScreen(scene);
   }
 
@@ -389,19 +439,15 @@
     renderFavorites();
     showScreen(favorites);
   }
-
   function renderFavorites() {
-    // sous-titre
     const n = likes.length;
     favSubtitle.textContent =
       n === 0 ? "Aucune question enregistrée"
               : n + (n > 1 ? " questions enregistrées" : " question enregistrée");
 
-    // bouton de restauration des cartes masquées
     dislikeCountEl.textContent = String(dislikes.length);
     restoreBtn.hidden = dislikes.length === 0;
 
-    // liste
     favList.innerHTML = "";
     if (n === 0) {
       favList.innerHTML =
@@ -410,14 +456,18 @@
       return;
     }
     likes.slice().reverse().forEach((item) => {
+      const deep = item.depth === "deep";
       const li = document.createElement("div");
-      li.className = "fav-item";
+      li.className = "fav-item" + (deep ? " fav-item--deep" : "");
       li.setAttribute("role", "listitem");
       li.innerHTML =
-        '<span class="fav-item__icon" aria-hidden="true">' + (item.icon || "🎭") + "</span>" +
+        '<span class="fav-item__pip" aria-hidden="true"></span>' +
         '<div class="fav-item__body">' +
-        '<p class="fav-item__text">' + esc(item.text) + "</p>" +
-        '<span class="fav-item__theme">' + esc(item.theme || "") + "</span>" +
+        '  <p class="fav-item__text">' + esc(item.text) + "</p>" +
+        '  <div class="fav-item__meta">' +
+        '    <span class="fav-item__theme">' + esc(item.theme || "") + "</span>" +
+        '    <span class="fav-item__badge">' + esc(depthLabel(item.depth || "soft")) + "</span>" +
+        "  </div>" +
         "</div>" +
         '<button class="fav-item__remove" type="button" aria-label="Retirer des favoris" title="Retirer">✕</button>';
       li.querySelector(".fav-item__remove").addEventListener("click", () => {
@@ -438,7 +488,7 @@
     }, 1500);
   }
 
-  /* ---------- Réglages : son & mode ---------- */
+  /* ---------- Réglages : son, mode, filtre ---------- */
   function toggleSound() {
     const on = window.Sound ? Sound.toggle() : false;
     soundToggle.setAttribute("aria-pressed", String(on));
@@ -447,6 +497,11 @@
   function setMode(mode) {
     state.mode = mode;
     modeButtons.forEach((b) => b.classList.toggle("is-active", b.dataset.mode === mode));
+  }
+  function setFilter(depth) {
+    state.filter = depth;
+    depthButtons.forEach((b) => b.classList.toggle("is-active", b.dataset.depth === depth));
+    buildDecks();
   }
 
   /* ---------- Clavier (accessibilité) ---------- */
@@ -470,6 +525,7 @@
   prevBtn.addEventListener("click", prevCard);
   soundToggle.addEventListener("click", toggleSound);
   modeButtons.forEach((b) => b.addEventListener("click", () => setMode(b.dataset.mode)));
+  depthButtons.forEach((b) => b.addEventListener("click", () => setFilter(b.dataset.depth)));
   favOpenBtn.addEventListener("click", openFavorites);
   favBackBtn.addEventListener("click", () => showScreen(scene));
   restoreBtn.addEventListener("click", () => {

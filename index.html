@@ -57,6 +57,13 @@
       <p class="stage-hint">Choisissez votre paquet — faites glisser pour explorer</p>
     </header>
 
+    <!-- Filtre de profondeur : légères / délicates -->
+    <div class="stage-filter" role="group" aria-label="Filtrer par profondeur des questions">
+      <button class="chip chip--depth is-active" data-depth="all" type="button">Toutes</button>
+      <button class="chip chip--depth" data-depth="soft" type="button">Légères</button>
+      <button class="chip chip--depth chip--delicate" data-depth="deep" type="button">Délicates</button>
+    </div>
+
     <!-- Rail de paquets scrollable horizontalement -->
     <div id="deck-rail" class="deck-rail" role="list" aria-label="Jeux de cartes thématiques"></div>
 
