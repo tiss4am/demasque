@@ -1,0 +1,141 @@
+{
+  "app": {
+    "name": "Démasque",
+    "tagline": "Levez le rideau sur vos vérités"
+  },
+  "themes": [
+    {
+      "id": "amis",
+      "title": "Entre Amis",
+      "subtitle": "Pour rire, se chamailler et se découvrir",
+      "icon": "🎭",
+      "accent": "#C9A24B",
+      "cards": [
+        "Qui, dans le groupe, survivrait le plus longtemps sur une île déserte ?",
+        "Quel est le pire mensonge que tu aies dit pour éviter une soirée ?",
+        "Si tu devais échanger ta vie avec l'un d'entre nous pendant une semaine, qui choisirais-tu ?",
+        "Quelle habitude de tes amis t'agace secrètement ?",
+        "Raconte le souvenir le plus gênant que tu partages avec quelqu'un ici.",
+        "Si l'amitié avait un prix, combien vaudrait la nôtre ?",
+        "Quel secret pourrais-tu confier à ce groupe sans jamais le regretter ?",
+        "Qui serait le premier à te trahir pour un million d'euros ?",
+        "Quelle est la chose la plus folle que tu ferais pour tes amis ?",
+        "À qui, dans cette pièce, ressembleras-tu le plus dans vingt ans ?"
+      ]
+    },
+    {
+      "id": "famille",
+      "title": "En Famille",
+      "subtitle": "Les liens que l'on ne choisit pas",
+      "icon": "🏛️",
+      "accent": "#C9A24B",
+      "cards": [
+        "Quel est le plus beau souvenir d'enfance que tu gardes de nous ?",
+        "Y a-t-il une tradition familiale que tu voudrais changer ?",
+        "Quelle valeur transmise par tes parents comptes-tu transmettre à ton tour ?",
+        "Quel non-dit familial mériterait enfin d'être dit ?",
+        "De qui, dans la famille, aurais-tu aimé être plus proche ?",
+        "Quel pardon n'as-tu jamais osé demander ?",
+        "Qu'est-ce qui te rend fier d'appartenir à cette famille ?",
+        "Quelle décision de tes parents comprends-tu seulement maintenant ?",
+        "Si tu pouvais poser une seule question à un ancêtre, laquelle serait-ce ?",
+        "Qu'aimerais-tu que l'on retienne de toi dans la famille ?"
+      ]
+    },
+    {
+      "id": "inconnus",
+      "title": "Entre Inconnus",
+      "subtitle": "Briser la glace en beauté",
+      "icon": "🕯️",
+      "accent": "#C9A24B",
+      "cards": [
+        "Qu'est-ce qui t'a amené ici, ce soir précisément ?",
+        "Quelle est la première impression que tu penses donner ?",
+        "Raconte un moment qui a changé le cours de ta vie.",
+        "Si je devais te résumer en trois mots, lesquels choisirais-tu pour toi ?",
+        "Quel talent inattendu caches-tu ?",
+        "Quelle est la conversation la plus marquante que tu aies eue avec un étranger ?",
+        "Qu'est-ce que les gens comprennent toujours de travers à ton sujet ?",
+        "Quel rêve poursuis-tu en ce moment ?",
+        "Quelle question aimerais-tu qu'on te pose plus souvent ?",
+        "Que ferais-tu de ta journée si personne ne te jugeait ?"
+      ]
+    },
+    {
+      "id": "solo",
+      "title": "En Solo",
+      "subtitle": "Un miroir tendu vers soi",
+      "icon": "🌙",
+      "accent": "#C9A24B",
+      "cards": [
+        "De quoi es-tu le plus fier cette année, sans le dire à voix haute ?",
+        "Quelle peur t'empêche encore d'avancer ?",
+        "Si tu écrivais une lettre à ton toi d'il y a dix ans, par quoi commencerais-tu ?",
+        "Qu'est-ce que tu remets toujours à demain ?",
+        "Quelle version de toi as-tu abandonnée en chemin ?",
+        "Qu'est-ce qui te fait sentir pleinement vivant ?",
+        "Quel mensonge te racontes-tu le plus souvent ?",
+        "Qu'aimerais-tu t'autoriser à ressentir plus librement ?",
+        "Quelle réussite ne dépend que de toi, et de personne d'autre ?",
+        "Si demain tout recommençait, que garderais-tu absolument ?"
+      ]
+    },
+    {
+      "id": "piquant",
+      "title": "Piquant",
+      "subtitle": "À réserver aux âmes audacieuses",
+      "icon": "🔥",
+      "accent": "#D8A657",
+      "cards": [
+        "Quel est le désir que tu n'as jamais osé formuler ?",
+        "Quelle est la limite que tu ne franchirais jamais, même par jeu ?",
+        "Raconte le flirt le plus audacieux de ta vie.",
+        "Quelle rencontre a été bien plus intense que prévu ?",
+        "Qu'est-ce qui te séduit instantanément chez quelqu'un ?",
+        "Quel secret croustillant emporterais-tu dans la tombe ?",
+        "Quelle est la chose la plus téméraire que tu aies faite par passion ?",
+        "À qui, dans ta vie, penses-tu encore malgré toi ?",
+        "Quelle règle aimes-tu enfreindre en amour ?",
+        "Quel aveu ferait rougir tout le monde ici ?"
+      ]
+    },
+    {
+      "id": "philosophie",
+      "title": "Philosophie",
+      "subtitle": "Les grandes questions, à voix nue",
+      "icon": "⚖️",
+      "accent": "#C9A24B",
+      "cards": [
+        "Le bonheur se cherche-t-il, ou se cultive-t-il ?",
+        "Sommes-nous libres, ou seulement convaincus de l'être ?",
+        "Peut-on aimer vraiment sans se perdre un peu ?",
+        "Vaut-il mieux une vérité qui blesse ou un mensonge qui protège ?",
+        "Qu'est-ce qui donne un sens à une vie ?",
+        "Le temps existe-t-il en dehors de nous ?",
+        "Peut-on pardonner l'impardonnable ?",
+        "La solitude est-elle un choix ou une fatalité ?",
+        "Faut-il tout dire à ceux que l'on aime ?",
+        "Qu'emporterait-on vraiment, si l'on n'emportait rien ?"
+      ]
+    },
+    {
+      "id": "dilemmes",
+      "title": "Dilemmes Moraux",
+      "subtitle": "Aucune réponse n'est confortable",
+      "icon": "🎩",
+      "accent": "#C9A24B",
+      "cards": [
+        "Trahir un ami pour sauver un inconnu : que fais-tu ?",
+        "Tu trouves un portefeuille plein d'argent sans identité. Que devient-il ?",
+        "Sauver une vie en mentant, ou dire la vérité au risque de la perdre ?",
+        "Dénoncer un proche qui a commis une faute grave : le ferais-tu ?",
+        "Un bouton efface ta pire douleur mais aussi le souvenir qui l'accompagne. L'actionnes-tu ?",
+        "Voler pour nourrir sa famille : crime ou devoir ?",
+        "Tu peux connaître la date de ta mort. Veux-tu savoir ?",
+        "Garder une promesse qui fait souffrir, ou la rompre pour soulager ?",
+        "Sacrifier ton rêve pour le bonheur de quelqu'un que tu aimes : jusqu'où irais-tu ?",
+        "Un secret peut détruire une famille mais libérer une personne. Le révèles-tu ?"
+      ]
+    }
+  ]
+}

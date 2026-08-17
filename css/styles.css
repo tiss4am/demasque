@@ -1,0 +1,640 @@
+/* =============================================================
+   DÉMASQUE — Feuille de style théâtrale
+   Palette : bordeaux rideau, noir velours, or discret.
+   Organisation : variables → base → écrans → composants → anim.
+   ============================================================= */
+
+/* ---------- 1. Variables & thème ---------- */
+:root {
+  /* Rouges rideau */
+  --curtain-deep: #3A0A0A;
+  --curtain-mid: #5A0F0F;
+  --curtain-bright: #7A1414;
+  --curtain-shadow: #240505;
+
+  /* Noir velours (fonds) */
+  --velvet-0: #140303;
+  --velvet-1: #1E0606;
+  --velvet-2: #2A0707;
+
+  /* Or discret */
+  --gold: #C9A24B;
+  --gold-soft: #D8B96B;
+  --gold-glow: rgba(201, 162, 75, 0.55);
+  --gold-faint: rgba(201, 162, 75, 0.18);
+
+  /* Textes */
+  --ink: #F4ECDD;
+  --ink-dim: #C9BBA4;
+
+  /* Rayons & ombres */
+  --radius-card: 20px;
+  --shadow-deep: 0 24px 60px rgba(0, 0, 0, 0.6);
+
+  --ease-curtain: cubic-bezier(0.66, 0, 0.22, 1);
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- 2. Base ---------- */
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  min-height: 100dvh;
+}
+
+body {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  color: var(--ink);
+  background:
+    radial-gradient(120% 80% at 50% -10%, var(--velvet-2), var(--velvet-0) 70%),
+    var(--velvet-0);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button { font-family: inherit; cursor: pointer; }
+
+/* Accessibilité : focus visible clair */
+:focus-visible {
+  outline: 2px solid var(--gold-soft);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ---------- 3. Système d'écrans ---------- */
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: max(20px, env(safe-area-inset-top)) 18px max(20px, env(safe-area-inset-bottom));
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-soft);
+  pointer-events: none;
+}
+.screen.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.screen[hidden] { display: none; }
+
+/* ---------- 4. Poussière dorée (particules globales) ---------- */
+.gold-dust {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  background-image:
+    radial-gradient(1.5px 1.5px at 20% 30%, var(--gold-glow), transparent 60%),
+    radial-gradient(1px 1px at 70% 20%, var(--gold-glow), transparent 60%),
+    radial-gradient(1.5px 1.5px at 40% 70%, var(--gold-glow), transparent 60%),
+    radial-gradient(1px 1px at 85% 60%, var(--gold-glow), transparent 60%),
+    radial-gradient(1px 1px at 55% 85%, var(--gold-glow), transparent 60%),
+    radial-gradient(1.5px 1.5px at 10% 80%, var(--gold-glow), transparent 60%);
+  opacity: 0.35;
+  animation: dust-drift 14s linear infinite;
+}
+@keyframes dust-drift {
+  0% { transform: translateY(0); opacity: 0.2; }
+  50% { opacity: 0.45; }
+  100% { transform: translateY(-24px); opacity: 0.2; }
+}
+
+/* =============================================================
+   ÉCRAN 1 — SPLASH / RIDEAU
+   ============================================================= */
+.splash { z-index: 20; }
+
+/* Spot de lumière convergent */
+.spotlight {
+  position: absolute;
+  top: -12%;
+  left: 50%;
+  width: 90vmax;
+  height: 120vmax;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    50% 42% at 50% 30%,
+    rgba(255, 240, 200, 0.20),
+    rgba(255, 220, 150, 0.08) 45%,
+    transparent 68%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: 2;
+  animation: spot-breathe 6s ease-in-out infinite;
+  transition: transform 1.6s var(--ease-curtain), opacity 1.6s ease;
+}
+@keyframes spot-breathe {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 1; }
+}
+
+/* Rideaux : deux pans en velours */
+.curtain {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 52%;
+  z-index: 3;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--curtain-shadow) 0,
+      var(--curtain-mid) 3.2%,
+      var(--curtain-bright) 6.4%,
+      var(--curtain-mid) 9.6%,
+      var(--curtain-shadow) 12.8%
+    );
+  box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.7);
+  transition: transform 1.5s var(--ease-curtain);
+  will-change: transform;
+}
+.curtain::after {
+  /* liseré doré discret au bord intérieur */
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 6px;
+  background: linear-gradient(var(--gold-soft), var(--gold), var(--gold-soft));
+  opacity: 0.5;
+  box-shadow: 0 0 14px var(--gold-glow);
+}
+.curtain--left { left: 0; }
+.curtain--left::after { right: 0; }
+.curtain--right { right: 0; }
+.curtain--right::after { left: 0; }
+
+/* Cantonnière (frise haute festonnée) */
+.curtain-valance {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 84px;
+  z-index: 4;
+  background:
+    repeating-linear-gradient(90deg,
+      var(--curtain-shadow) 0, var(--curtain-mid) 2%, var(--curtain-bright) 4%, var(--curtain-mid) 6%, var(--curtain-shadow) 8%);
+  box-shadow: inset 0 -20px 40px rgba(0,0,0,0.6), 0 6px 20px rgba(0,0,0,0.5);
+  -webkit-mask: radial-gradient(22px 30px at 22px 84px, transparent 96%, #000 100%) repeat-x;
+          mask: radial-gradient(22px 30px at 22px 84px, transparent 96%, #000 100%) repeat-x;
+  -webkit-mask-size: 44px 84px;
+          mask-size: 44px 84px;
+}
+
+/* État "rideau ouvert" */
+.splash.is-opening .curtain--left { transform: translateX(-102%); }
+.splash.is-opening .curtain--right { transform: translateX(102%); }
+.splash.is-opening .curtain-valance { transform: translateY(-100%); transition: transform 1.5s var(--ease-curtain); }
+.splash.is-opening .spotlight { transform: translateX(-50%) scale(1.4); opacity: 0.4; }
+
+/* Contenu central */
+.marquee-stage {
+  position: relative;
+  z-index: 6;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: opacity 0.8s ease, transform 0.8s var(--ease-soft);
+}
+.splash.is-opening .marquee-stage {
+  opacity: 0;
+  transform: scale(1.08);
+}
+
+.logo {
+  width: min(52vw, 220px);
+  height: auto;
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.6));
+  animation: logo-float 5s ease-in-out infinite;
+}
+@keyframes logo-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Titre marquee (enseigne lumineuse) */
+.marquee-title {
+  margin: 6px 0 0;
+  font-family: "Pinyon Script", cursive;
+  font-weight: 400;
+  font-size: clamp(3.4rem, 15vw, 6.5rem);
+  line-height: 0.9;
+  color: var(--gold-soft);
+  text-shadow:
+    0 0 8px var(--gold-glow),
+    0 0 20px rgba(216, 185, 107, 0.5),
+    0 0 40px rgba(201, 162, 75, 0.35);
+  animation: marquee-flicker 4.5s infinite;
+}
+.marquee-frame {
+  position: relative;
+  padding: 0 0.35em;
+}
+/* Rangée d'ampoules type enseigne cinéma */
+.marquee-frame::before,
+.marquee-frame::after {
+  content: "";
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  height: 6px;
+  background-image: radial-gradient(circle, var(--gold-soft) 0 45%, transparent 55%);
+  background-size: 16px 6px;
+  background-repeat: repeat-x;
+  opacity: 0.85;
+  filter: drop-shadow(0 0 4px var(--gold-glow));
+  animation: bulbs 1.2s steps(2) infinite;
+}
+.marquee-frame::before { top: -6px; }
+.marquee-frame::after { bottom: -2px; animation-delay: 0.6s; }
+@keyframes bulbs {
+  0% { opacity: 0.9; }
+  50% { opacity: 0.4; }
+  100% { opacity: 0.9; }
+}
+@keyframes marquee-flicker {
+  0%, 19%, 21%, 55%, 57%, 100% { opacity: 1; }
+  20% { opacity: 0.7; }
+  56% { opacity: 0.85; }
+}
+
+.tagline {
+  margin: 2px 0 18px;
+  font-family: "Marcellus", serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: clamp(0.7rem, 3vw, 0.9rem);
+  color: var(--ink-dim);
+}
+
+/* =============================================================
+   BOUTONS
+   ============================================================= */
+.btn {
+  position: relative;
+  border: 1px solid var(--gold);
+  background: linear-gradient(180deg, rgba(90,15,15,0.6), rgba(36,5,5,0.8));
+  color: var(--ink);
+  font-family: "Marcellus", serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  padding: 14px 30px;
+  border-radius: 999px;
+  overflow: hidden;
+  transition: transform 0.25s var(--ease-soft), box-shadow 0.25s ease, background 0.25s ease;
+  box-shadow: 0 0 0 rgba(201,162,75,0);
+}
+.btn:hover, .btn:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 26px rgba(0,0,0,0.5), 0 0 22px var(--gold-glow);
+}
+.btn:active { transform: translateY(0) scale(0.98); }
+
+.btn--enter { font-size: 1.05rem; padding: 16px 40px; }
+.btn__glow {
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(circle at 50% 50%, var(--gold-glow), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.btn--enter:hover .btn__glow { opacity: 0.5; }
+
+.btn--gold {
+  background: linear-gradient(180deg, var(--gold-soft), var(--gold));
+  color: #2a1405;
+  border-color: var(--gold-soft);
+  font-weight: 600;
+}
+.btn--ghost {
+  background: transparent;
+  border-color: var(--gold-faint);
+  color: var(--ink-dim);
+}
+
+/* =============================================================
+   ÉCRAN 2 — LA SCÈNE
+   ============================================================= */
+.scene { z-index: 15; justify-content: flex-start; gap: 8px; }
+
+.stage-header { text-align: center; margin-top: 8px; }
+.stage-title {
+  font-family: "Pinyon Script", cursive;
+  font-size: clamp(2.6rem, 11vw, 4rem);
+  margin: 0;
+  color: var(--gold-soft);
+  text-shadow: 0 0 14px var(--gold-glow);
+}
+.stage-hint {
+  font-family: "Marcellus", serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: var(--ink-dim);
+  margin: 2px 0 0;
+}
+
+/* Rail de paquets */
+.deck-rail {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 24px max(16px, calc(50vw - 130px));
+  scrollbar-width: none;
+}
+.deck-rail::-webkit-scrollbar { display: none; }
+
+/* Un paquet de cartes empilées */
+.deck {
+  position: relative;
+  flex: 0 0 auto;
+  width: 240px;
+  height: 340px;
+  scroll-snap-align: center;
+  border: none;
+  background: none;
+  padding: 0;
+  transition: transform 0.4s var(--ease-soft);
+}
+.deck:hover, .deck:focus-visible { transform: translateY(-8px) scale(1.02); }
+
+/* cartes empilées derrière (effet paquet) */
+.deck::before,
+.deck::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-card);
+  background: linear-gradient(160deg, var(--curtain-mid), var(--curtain-deep));
+  border: 1px solid var(--gold-faint);
+}
+.deck::before { transform: translate(10px, 10px) rotate(2.5deg); opacity: 0.55; }
+.deck::after { transform: translate(5px, 5px) rotate(1.2deg); opacity: 0.8; }
+
+.deck__face {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-card);
+  background:
+    repeating-linear-gradient(115deg, rgba(0,0,0,0.14) 0 6px, transparent 6px 12px),
+    linear-gradient(155deg, var(--curtain-bright), var(--curtain-deep));
+  border: 1px solid var(--gold);
+  box-shadow: var(--shadow-deep), inset 0 0 40px rgba(0,0,0,0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px 20px;
+  text-align: center;
+  overflow: hidden;
+}
+.deck__face::before {
+  /* cadre doré intérieur */
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid var(--gold-faint);
+  border-radius: 12px;
+  pointer-events: none;
+}
+.deck__icon { font-size: 2.6rem; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)); }
+.deck__title {
+  font-family: "Marcellus", serif;
+  font-size: 1.5rem;
+  margin: 0;
+  color: var(--ink);
+  letter-spacing: 0.03em;
+}
+.deck__subtitle {
+  font-size: 1rem;
+  color: var(--ink-dim);
+  margin: 0;
+  font-style: italic;
+}
+.deck__count {
+  position: absolute;
+  bottom: 16px;
+  font-family: "Marcellus", serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-soft);
+}
+
+/* Réglages scène */
+.stage-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding-bottom: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--gold-faint);
+  background: rgba(20,3,3,0.6);
+  color: var(--ink-dim);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-family: "Marcellus", serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  transition: all 0.25s ease;
+}
+.chip.is-active, .chip[aria-pressed="true"] {
+  color: #2a1405;
+  background: linear-gradient(180deg, var(--gold-soft), var(--gold));
+  border-color: var(--gold-soft);
+}
+.mode-switch { display: inline-flex; gap: 6px; }
+
+/* =============================================================
+   ÉCRAN 3 — MODE JEU
+   ============================================================= */
+.game { z-index: 15; justify-content: flex-start; }
+
+.game-header {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
+}
+.game-title-wrap { text-align: center; flex: 1; }
+.game-title {
+  font-family: "Pinyon Script", cursive;
+  font-size: clamp(1.8rem, 8vw, 2.6rem);
+  margin: 0;
+  color: var(--gold-soft);
+  text-shadow: 0 0 12px var(--gold-glow);
+  line-height: 1;
+}
+.game-progress {
+  margin: 2px 0 0;
+  font-family: "Marcellus", serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.icon-btn {
+  border: 1px solid var(--gold-faint);
+  background: rgba(20,3,3,0.6);
+  color: var(--ink-dim);
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-family: "Marcellus", serif;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+.icon-btn:hover, .icon-btn:focus-visible { color: var(--ink); border-color: var(--gold); }
+
+/* Pile de cartes de jeu */
+.card-stack {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1400px;
+  margin: 10px 0;
+}
+
+.play-card {
+  position: absolute;
+  width: min(84vw, 360px);
+  height: min(62vh, 520px);
+  border-radius: var(--radius-card);
+  background:
+    radial-gradient(120% 100% at 50% 0%, rgba(122,20,20,0.55), transparent 60%),
+    repeating-linear-gradient(122deg, rgba(255,255,255,0.02) 0 8px, transparent 8px 16px),
+    linear-gradient(160deg, #2e0909, #180404);
+  border: 1px solid var(--gold);
+  box-shadow: var(--shadow-deep), inset 0 0 60px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 34px 28px;
+  text-align: center;
+  will-change: transform, opacity;
+  touch-action: pan-y;
+  user-select: none;
+}
+.play-card::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border: 1px solid var(--gold-faint);
+  border-radius: 12px;
+  pointer-events: none;
+}
+/* petites vignettes de coin (numéro de carte) */
+.play-card__corner {
+  position: absolute;
+  font-family: "Marcellus", serif;
+  color: var(--gold-soft);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  opacity: 0.85;
+}
+.play-card__corner--tl { top: 20px; left: 22px; }
+.play-card__corner--br { bottom: 20px; right: 22px; transform: rotate(180deg); }
+
+.play-card__mark {
+  font-size: 1.6rem;
+  margin-bottom: 14px;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+}
+.play-card__text {
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(1.4rem, 5.6vw, 2rem);
+  font-weight: 500;
+  line-height: 1.32;
+  color: var(--ink);
+  margin: 0;
+  max-width: 26ch;
+}
+.play-card__theme {
+  margin-top: 18px;
+  font-family: "Marcellus", serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-soft);
+}
+
+/* profondeur des cartes sous le dessus */
+.play-card.is-behind-1 { transform: translateY(14px) scale(0.955); opacity: 0.6; filter: brightness(0.7); }
+.play-card.is-behind-2 { transform: translateY(26px) scale(0.91); opacity: 0.35; filter: brightness(0.5); }
+
+/* animations d'entrée/sortie de carte */
+.play-card.enter-next { animation: card-in-right 0.5s var(--ease-soft) both; }
+.play-card.enter-prev { animation: card-in-left 0.5s var(--ease-soft) both; }
+@keyframes card-in-right {
+  from { transform: translateX(60%) rotate(6deg); opacity: 0; }
+  to { transform: translateX(0) rotate(0); opacity: 1; }
+}
+@keyframes card-in-left {
+  from { transform: translateX(-60%) rotate(-6deg); opacity: 0; }
+  to { transform: translateX(0) rotate(0); opacity: 1; }
+}
+
+.game-footer {
+  display: flex;
+  gap: 14px;
+  padding: 6px 0 2px;
+}
+.swipe-hint {
+  font-family: "Marcellus", serif;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  opacity: 0.6;
+  margin: 6px 0 max(6px, env(safe-area-inset-bottom));
+}
+
+/* =============================================================
+   RESPONSIVE — desktop plus généreux
+   ============================================================= */
+@media (min-width: 720px) {
+  .deck { width: 260px; height: 370px; }
+  .stage-hint, .swipe-hint { font-size: 0.8rem; }
+}
+
+/* =============================================================
+   ACCESSIBILITÉ — mouvement réduit
+   ============================================================= */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.2s !important;
+  }
+  .curtain { transition: transform 0.4s ease; }
+}

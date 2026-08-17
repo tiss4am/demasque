@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Démasque — une application de débats et dilemmes à faire entre amis, en famille, entre inconnus ou en solo. Une expérience théâtrale, vintage et intime." />
+  <meta name="theme-color" content="#2A0707" />
+  <title>Démasque — Levez le rideau sur vos vérités</title>
+
+  <!-- Polices : titre script théâtral + corps sans-serif raffiné -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Marcellus&family=Pinyon+Script&display=swap" rel="stylesheet" />
+
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Poussière dorée / particules scintillantes (décoratif) -->
+  <div class="gold-dust" aria-hidden="true"></div>
+
+  <!-- ============================================================= -->
+  <!-- ÉCRAN 1 — ACCUEIL / RIDEAU FERMÉ (entrée du théâtre)          -->
+  <!-- ============================================================= -->
+  <section id="splash" class="screen splash is-active" aria-label="Écran d'accueil">
+    <!-- Halo de spot convergent sur le logo -->
+    <div class="spotlight" aria-hidden="true"></div>
+
+    <!-- Rideaux de scène (deux pans qui s'écarteront) -->
+    <div class="curtain curtain--left" aria-hidden="true"></div>
+    <div class="curtain curtain--right" aria-hidden="true"></div>
+    <div class="curtain-valance" aria-hidden="true"></div>
+
+    <!-- Contenu central sur le velours -->
+    <div class="marquee-stage">
+      <img src="assets/logo.svg" alt="Démasque — masques de comédie et de tragédie" class="logo" />
+
+      <!-- Nom en enseigne lumineuse (marquee cinéma) -->
+      <h1 class="marquee-title" aria-label="Démasque">
+        <span class="marquee-frame">Démasque</span>
+      </h1>
+      <p class="tagline">Levez le rideau sur vos vérités</p>
+
+      <button id="enter-btn" class="btn btn--enter" type="button">
+        <span class="btn__glow" aria-hidden="true"></span>
+        Lever de rideau
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- ÉCRAN 2 — LA SCÈNE (choix des jeux de cartes thématiques)     -->
+  <!-- ============================================================= -->
+  <section id="scene" class="screen scene" aria-label="La scène — choisir un thème" hidden>
+    <header class="stage-header">
+      <h2 class="stage-title">La Scène</h2>
+      <p class="stage-hint">Choisissez votre paquet — faites glisser pour explorer</p>
+    </header>
+
+    <!-- Rail de paquets scrollable horizontalement -->
+    <div id="deck-rail" class="deck-rail" role="list" aria-label="Jeux de cartes thématiques"></div>
+
+    <!-- Réglages : son + mode -->
+    <div class="stage-controls">
+      <button id="sound-toggle" class="chip" type="button" aria-pressed="false" title="Activer les sons">
+        <span class="chip__icon">🔈</span><span class="chip__label">Sons</span>
+      </button>
+      <div class="mode-switch" role="group" aria-label="Mode de jeu">
+        <button class="chip chip--mode is-active" data-mode="solo" type="button">Solo</button>
+        <button class="chip chip--mode" data-mode="groupe" type="button">Groupe</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- ÉCRAN 3 — MODE JEU (cartes swipeables)                         -->
+  <!-- ============================================================= -->
+  <section id="game" class="screen game" aria-label="Mode jeu — cartes" hidden>
+    <header class="game-header">
+      <button id="back-btn" class="icon-btn" type="button" aria-label="Retour à la scène">‹ Scène</button>
+      <div class="game-title-wrap">
+        <h2 id="game-title" class="game-title">Thème</h2>
+        <p id="game-progress" class="game-progress" aria-live="polite">Carte 1 / 10</p>
+      </div>
+      <button id="shuffle-btn" class="icon-btn" type="button" aria-label="Mélanger le paquet" title="Mélanger">⤨ Mélanger</button>
+    </header>
+
+    <!-- Pile de cartes -->
+    <div id="card-stack" class="card-stack" aria-live="polite"></div>
+
+    <div class="game-footer">
+      <button id="prev-card" class="btn btn--ghost" type="button">‹ Précédente</button>
+      <button id="next-card" class="btn btn--gold" type="button">Suivante ›</button>
+    </div>
+    <p class="swipe-hint" aria-hidden="true">Glissez la carte, ou utilisez les flèches ◂ ▸</p>
+  </section>
+
+  <!-- Sons (générés à la volée si les fichiers sont absents — voir js/sound.js) -->
+  <script src="js/sound.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

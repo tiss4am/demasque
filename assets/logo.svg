@@ -1,0 +1,35 @@
+<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Deux masques de théâtre, comédie et tragédie">
+  <defs>
+    <linearGradient id="maskShade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e7e2d6"/>
+    </linearGradient>
+    <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+
+  <!-- Comedy mask (left, smiling) -->
+  <g filter="url(#softShadow)" transform="translate(70 100) rotate(-8)">
+    <ellipse cx="0" cy="0" rx="52" ry="66" fill="url(#maskShade)"/>
+    <path d="M-52 -6 Q0 -22 52 -6" fill="none" stroke="#C9A24B" stroke-width="2.5" opacity="0.7"/>
+    <!-- eyes -->
+    <path d="M-30 -14 q10 -14 22 0 q-11 8 -22 0 z" fill="#3a0a0a"/>
+    <path d="M8 -14 q10 -14 22 0 q-11 8 -22 0 z" fill="#3a0a0a"/>
+    <!-- smiling mouth -->
+    <path d="M-26 24 q26 30 52 0 q-26 12 -52 0 z" fill="#3a0a0a"/>
+    <path d="M-2 -56 q4 -8 0 -14" fill="none" stroke="#C9A24B" stroke-width="2"/>
+  </g>
+
+  <!-- Tragedy mask (right, frowning) -->
+  <g filter="url(#softShadow)" transform="translate(190 108) rotate(8)">
+    <ellipse cx="0" cy="0" rx="52" ry="66" fill="url(#maskShade)"/>
+    <path d="M-52 -6 Q0 -22 52 -6" fill="none" stroke="#C9A24B" stroke-width="2.5" opacity="0.7"/>
+    <!-- eyes -->
+    <path d="M-30 -6 q10 14 22 0 q-11 -8 -22 0 z" fill="#3a0a0a"/>
+    <path d="M8 -6 q10 14 22 0 q-11 -8 -22 0 z" fill="#3a0a0a"/>
+    <!-- frowning mouth -->
+    <path d="M-26 34 q26 -26 52 0 q-26 -8 -52 0 z" fill="#3a0a0a"/>
+    <path d="M-2 -56 q4 -8 0 -14" fill="none" stroke="#C9A24B" stroke-width="2"/>
+  </g>
+</svg>
