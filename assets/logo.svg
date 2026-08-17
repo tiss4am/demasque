@@ -1,35 +1,78 @@
-<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Deux masques de théâtre, comédie et tragédie">
+<svg viewBox="0 0 340 280" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Deux masques de théâtre qui se chevauchent : la tragédie et la comédie">
   <defs>
-    <linearGradient id="maskShade" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffffff"/>
-      <stop offset="1" stop-color="#e7e2d6"/>
+    <!-- Volume ivoire : clair en haut, ombré vers le menton -->
+    <linearGradient id="ivory" x1="0" y1="0" x2="0.15" y2="1">
+      <stop offset="0"    stop-color="#fdfbf5"/>
+      <stop offset="0.55" stop-color="#f1ece0"/>
+      <stop offset="1"    stop-color="#d8d1c1"/>
     </linearGradient>
-    <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.55"/>
+    <!-- Reflet de joue -->
+    <radialGradient id="cheek" cx="0.42" cy="0.34" r="0.7">
+      <stop offset="0"   stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Ombre portée entre les deux masques -->
+    <radialGradient id="contact" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0"   stop-color="#8f867a" stop-opacity="0.55"/>
+      <stop offset="1"   stop-color="#8f867a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hollow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a1010"/>
+      <stop offset="1" stop-color="#2a0808"/>
+    </linearGradient>
+    <filter id="drop" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="7" stdDeviation="9" flood-color="#000" flood-opacity="0.45"/>
     </filter>
   </defs>
 
-  <!-- Comedy mask (left, smiling) -->
-  <g filter="url(#softShadow)" transform="translate(70 100) rotate(-8)">
-    <ellipse cx="0" cy="0" rx="52" ry="66" fill="url(#maskShade)"/>
-    <path d="M-52 -6 Q0 -22 52 -6" fill="none" stroke="#C9A24B" stroke-width="2.5" opacity="0.7"/>
-    <!-- eyes -->
-    <path d="M-30 -14 q10 -14 22 0 q-11 8 -22 0 z" fill="#3a0a0a"/>
-    <path d="M8 -14 q10 -14 22 0 q-11 8 -22 0 z" fill="#3a0a0a"/>
-    <!-- smiling mouth -->
-    <path d="M-26 24 q26 30 52 0 q-26 12 -52 0 z" fill="#3a0a0a"/>
-    <path d="M-2 -56 q4 -8 0 -14" fill="none" stroke="#C9A24B" stroke-width="2"/>
+  <!-- ============ MASQUE GAUCHE — TRAGÉDIE (triste) ============ -->
+  <g filter="url(#drop)" transform="translate(120 138) rotate(-7)">
+    <!-- contour du visage (forme de goutte, front large, menton fin) -->
+    <path d="M0,-98 C40,-98 66,-66 66,-18 C66,26 44,74 0,98
+             C-44,74 -66,26 -66,-18 C-66,-66 -40,-98 0,-98 Z"
+          fill="url(#ivory)" stroke="#c9a24b" stroke-width="1.2" stroke-opacity="0.22"/>
+    <path d="M0,-98 C40,-98 66,-66 66,-18 C66,26 44,74 0,98
+             C-44,74 -66,26 -66,-18 C-66,-66 -40,-98 0,-98 Z" fill="url(#cheek)"/>
+    <!-- sourcils froncés (tragédie) -->
+    <path d="M-40,-30 Q-22,-42 -6,-28" fill="none" stroke="#cbc3b2" stroke-width="4" stroke-linecap="round"/>
+    <path d="M40,-30 Q22,-42 6,-28"  fill="none" stroke="#cbc3b2" stroke-width="4" stroke-linecap="round"/>
+    <!-- yeux tristes (inclinés vers l'intérieur) -->
+    <path d="M-42,-18 Q-24,-30 -8,-14 Q-26,-8 -42,-18 Z" fill="url(#hollow)"/>
+    <path d="M42,-18  Q24,-30 8,-14  Q26,-8 42,-18 Z"  fill="url(#hollow)"/>
+    <!-- nez + narines -->
+    <path d="M0,-10 C-6,10 -10,28 -2,34 C4,30 4,30 8,32 C12,28 8,10 2,-10 Z"
+          fill="#e7e0d0" opacity="0.6"/>
+    <ellipse cx="-4" cy="34" rx="3.4" ry="4.6" fill="#3a1010"/>
+    <ellipse cx="6"  cy="34" rx="3.4" ry="4.6" fill="#3a1010"/>
+    <!-- bouche tombante, ouverte (tragédie) -->
+    <path d="M-26,66 Q0,50 26,66 Q0,86 -26,66 Z" fill="url(#hollow)"/>
+    <path d="M-26,66 Q0,52 26,66" fill="none" stroke="#b9b0a0" stroke-width="2" stroke-opacity="0.5"/>
   </g>
 
-  <!-- Tragedy mask (right, frowning) -->
-  <g filter="url(#softShadow)" transform="translate(190 108) rotate(8)">
-    <ellipse cx="0" cy="0" rx="52" ry="66" fill="url(#maskShade)"/>
-    <path d="M-52 -6 Q0 -22 52 -6" fill="none" stroke="#C9A24B" stroke-width="2.5" opacity="0.7"/>
-    <!-- eyes -->
-    <path d="M-30 -6 q10 14 22 0 q-11 -8 -22 0 z" fill="#3a0a0a"/>
-    <path d="M8 -6 q10 14 22 0 q-11 -8 -22 0 z" fill="#3a0a0a"/>
-    <!-- frowning mouth -->
-    <path d="M-26 34 q26 -26 52 0 q-26 -8 -52 0 z" fill="#3a0a0a"/>
-    <path d="M-2 -56 q4 -8 0 -14" fill="none" stroke="#C9A24B" stroke-width="2"/>
+  <!-- ombre de contact là où les masques se chevauchent -->
+  <ellipse cx="170" cy="150" rx="46" ry="90" fill="url(#contact)"/>
+
+  <!-- ============ MASQUE DROIT — COMÉDIE (souriant) ============ -->
+  <g filter="url(#drop)" transform="translate(214 146) rotate(8)">
+    <path d="M0,-98 C40,-98 66,-66 66,-18 C66,26 44,74 0,98
+             C-44,74 -66,26 -66,-18 C-66,-66 -40,-98 0,-98 Z"
+          fill="url(#ivory)" stroke="#c9a24b" stroke-width="1.2" stroke-opacity="0.22"/>
+    <path d="M0,-98 C40,-98 66,-66 66,-18 C66,26 44,74 0,98
+             C-44,74 -66,26 -66,-18 C-66,-66 -40,-98 0,-98 Z" fill="url(#cheek)"/>
+    <!-- sourcils haussés (joie) -->
+    <path d="M-42,-26 Q-24,-40 -6,-30" fill="none" stroke="#cbc3b2" stroke-width="4" stroke-linecap="round"/>
+    <path d="M42,-26 Q24,-40 6,-30"  fill="none" stroke="#cbc3b2" stroke-width="4" stroke-linecap="round"/>
+    <!-- yeux rieurs (arqués vers le haut) -->
+    <path d="M-42,-14 Q-24,-26 -8,-16 Q-26,-4 -42,-14 Z" fill="url(#hollow)"/>
+    <path d="M42,-14  Q24,-26 8,-16  Q26,-4 42,-14 Z"  fill="url(#hollow)"/>
+    <!-- nez + narines -->
+    <path d="M0,-8 C-6,12 -10,28 -2,34 C4,30 4,30 8,32 C12,28 8,12 2,-8 Z"
+          fill="#e7e0d0" opacity="0.6"/>
+    <ellipse cx="-4" cy="34" rx="3.4" ry="4.6" fill="#3a1010"/>
+    <ellipse cx="6"  cy="34" rx="3.4" ry="4.6" fill="#3a1010"/>
+    <!-- large sourire ouvert (comédie) -->
+    <path d="M-30,58 Q0,84 30,58 Q0,74 -30,58 Z" fill="url(#hollow)"/>
+    <path d="M-30,58 Q0,80 30,58" fill="none" stroke="#b9b0a0" stroke-width="2" stroke-opacity="0.5"/>
   </g>
 </svg>
