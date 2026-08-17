@@ -44,7 +44,7 @@ base de données, prête à déployer sur **GitHub Pages**.
 /
 ├── index.html          Point d'entrée, structure des 3 écrans
 ├── assets/
-│   ├── logo.svg        Masques comédie/tragédie (fond transparent)
+│   ├── logo.png        Masques comédie/tragédie (fond transparent)
 │   └── sounds/         (optionnel) vos propres fichiers audio
 ├── css/
 │   └── styles.css      Direction artistique complète (rideau, or, cartes)
